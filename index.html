@@ -1,14 +1,14 @@
-```html
 <!DOCTYPE html>
 <html>
 <head>
 
 <title>TaskTrack</title>
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-/* MAIN THEME */
+/* BODY */
 
 body{
 margin:0;
@@ -16,31 +16,22 @@ font-family:Trebuchet MS, sans-serif;
 color:white;
 background:linear-gradient(135deg,#0b0014,#2b0040);
 text-align:center;
-transition:.4s;
+transition:0.4s;
 }
+
+/* LIGHT MODE */
 
 body.light{
 background:#f0f3f8;
 color:black;
 }
 
-/* THEME TOGGLE */
-
-.theme-toggle{
-position:fixed;
-top:15px;
-right:20px;
-font-size:26px;
-cursor:pointer;
-z-index:1000;
-}
-
-/* PAGE SYSTEM */
+/* PAGE ANIMATION */
 
 .page{
 display:none;
 padding-top:60px;
-animation:fade .4s ease;
+animation:fade .6s;
 }
 
 .active{
@@ -48,24 +39,8 @@ display:block;
 }
 
 @keyframes fade{
-from{opacity:0;transform:translateY(10px)}
-to{opacity:1;transform:translateY(0)}
-}
-
-/* BOX */
-
-.box{
-background:rgba(255,255,255,0.1);
-width:240px;
-margin:15px auto;
-padding:20px;
-border-radius:12px;
-backdrop-filter:blur(10px);
-transition:.3s;
-}
-
-.box:hover{
-transform:scale(1.05);
+from{opacity:0; transform:translateY(20px);}
+to{opacity:1; transform:translateY(0);}
 }
 
 /* BUTTON */
@@ -78,124 +53,89 @@ background:#a855ff;
 color:white;
 cursor:pointer;
 font-weight:bold;
-transition:.2s;
+margin:5px;
+transition:0.3s;
 }
 
 button:hover{
 background:#9333ea;
-transform:scale(1.05);
+transform:scale(1.08);
+}
+
+/* INPUT */
+
+input{
+padding:10px;
+width:55%;
+border-radius:5px;
+border:none;
+margin:5px;
 }
 
 /* TASK AREA */
 
 .task-section{
-width:70%;
+width:80%;
 margin:auto;
 margin-top:20px;
 }
 
-input{
-padding:10px;
-border-radius:6px;
-border:none;
-margin:5px;
-}
+/* TASK CARD */
 
 .task{
 background:rgba(255,255,255,0.1);
-padding:10px;
+padding:12px;
 margin-top:10px;
-border-radius:8px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-transition:.3s;
+border-radius:6px;
+animation:taskPop .4s;
 }
 
-.task:hover{
-transform:translateY(-3px);
+@keyframes taskPop{
+from{transform:scale(.8); opacity:0;}
+to{transform:scale(1); opacity:1;}
 }
+
+/* TASK STATUS */
 
 .completed{
 text-decoration:line-through;
-opacity:.6;
+color:#7CFFB2;
 }
 
-/* REPORT */
+.late{
+background:#7a0000;
+}
+
+/* UPDATE BUTTONS */
+
+.edit{background:orange;}
+.delete{background:red;}
+.complete{background:green;}
 
 .report{
 background:rgba(255,255,255,0.1);
 padding:15px;
 margin-top:20px;
-border-radius:8px;
+border-radius:6px;
 }
 
-/* CALENDAR */
+/* THEME BUTTON */
 
-.calendar-box{
-background:rgba(255,255,255,0.1);
-padding:20px;
-width:300px;
-margin:auto;
-border-radius:10px;
-}
-
-/* TUTORIAL */
-
-.slide{
-width:100vw;
-height:100vh;
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
-position:absolute;
-opacity:0;
-transform:scale(.9);
-transition:.5s;
-}
-
-.slide.active{
-opacity:1;
-transform:scale(1);
-}
-
-.slide img{
-width:220px;
-margin-bottom:20px;
-border-radius:10px;
-}
-
-.progress{
+.theme-toggle{
 position:fixed;
-top:0;
-left:0;
-height:5px;
-background:#a855ff;
-width:0%;
-}
-
-.nav{
-position:fixed;
-bottom:20px;
-width:100%;
-display:flex;
-justify-content:center;
-gap:20px;
-}
-
-/* MOBILE */
-
-@media(max-width:768px){
-
-.task-section{
-width:90%;
-}
-
+top:15px;
+right:20px;
+font-size:22px;
+cursor:pointer;
+background:rgba(255,255,255,0.2);
+padding:8px 12px;
+border-radius:50px;
 }
 
 </style>
-
 </head>
 
 <body>
@@ -208,13 +148,7 @@ width:90%;
 
 <h1>TaskTrack</h1>
 
-<div class="box">
 <button onclick="showPage('menu')">Open</button>
-</div>
-
-<div class="box">
-<button onclick="showTutorial()">Tutorial</button>
-</div>
 
 </div>
 
@@ -224,25 +158,13 @@ width:90%;
 
 <h2>Task Menu</h2>
 
-<div class="box">
 <button onclick="showPage('addPage')">Add Task</button>
-</div>
 
-<div class="box">
 <button onclick="showPage('updatePage')">Update Task</button>
-</div>
 
-<div class="box">
 <button onclick="showPage('viewPage')">View Task</button>
-</div>
 
-<div class="box">
-<button onclick="showPage('calendarPage')">Calendar</button>
-</div>
-
-<div class="box">
 <button onclick="showPage('home')">Back</button>
-</div>
 
 </div>
 
@@ -252,29 +174,31 @@ width:90%;
 
 <h2>Add Task</h2>
 
-<div class="task-section">
+<input id="taskInput" placeholder="Enter task">
 
-<input id="taskInput" placeholder="Task name">
+<br>
 
-<input type="date" id="dueDate">
+<label>Deadline:</label>
 
-<br><br>
+<input type="date" id="taskDeadline">
+
+<br>
 
 <button onclick="addTask()">Add Task</button>
 
-</div>
+<br><br>
 
-<h3>Added Tasks</h3>
+<button onclick="showPage('viewPage')">View Tasks</button>
 
-<div id="addedTasks" class="task-section"></div>
+<button onclick="showPage('updatePage')">Update Tasks</button>
 
-<br>
+<br><br>
 
 <button onclick="showPage('menu')">Back</button>
 
 </div>
 
-<!-- UPDATE -->
+<!-- UPDATE TASK -->
 
 <div id="updatePage" class="page">
 
@@ -282,87 +206,41 @@ width:90%;
 
 <div id="updateList" class="task-section"></div>
 
+<br>
+
+<button onclick="showPage('viewPage')">View Tasks</button>
+
 <button onclick="showPage('menu')">Back</button>
 
 </div>
 
-<!-- VIEW -->
+<!-- VIEW TASK -->
 
 <div id="viewPage" class="page">
 
 <h2>View Tasks</h2>
 
-<input id="searchTask" placeholder="Search task..." onkeyup="searchTasks()">
+<input id="searchTask" placeholder="Search..." onkeyup="searchTasks()">
 
 <div id="taskList" class="task-section"></div>
 
 <div class="report">
 
-<p>Total Tasks: <span id="total">0</span></p>
+<p>Total: <span id="total">0</span></p>
+
 <p>Completed: <span id="completed">0</span></p>
+
 <p>Pending: <span id="pending">0</span></p>
 
 </div>
 
-<button onclick="showPage('menu')">Back</button>
+<button onclick="refreshTasks()">Refresh</button>
 
-</div>
+<button onclick="saveTasksToFile()">Save Tasks</button>
 
-<!-- CALENDAR -->
-
-<div id="calendarPage" class="page">
-
-<h2>Calendar Tasks</h2>
-
-<div class="calendar-box">
-
-<input type="date" id="calendarDate" onchange="showCalendarTasks()">
-
-<div id="calendarTasks"></div>
-
-</div>
-
-<br>
+<br><br>
 
 <button onclick="showPage('menu')">Back</button>
-
-</div>
-
-<!-- TUTORIAL -->
-
-<div id="tutorial" class="page">
-
-<div class="progress" id="progress"></div>
-
-<div class="slide active">
-<img src="https://picsum.photos/200">
-<h1>Welcome</h1>
-<p>This tutorial explains the system.</p>
-</div>
-
-<div class="slide">
-<img src="https://picsum.photos/201">
-<h1>Add Tasks</h1>
-<p>Create tasks with deadlines.</p>
-</div>
-
-<div class="slide">
-<img src="https://picsum.photos/202">
-<h1>Calendar</h1>
-<p>View tasks by due date.</p>
-</div>
-
-<div class="slide">
-<img src="https://picsum.photos/203">
-<h1>Track Progress</h1>
-<p>Monitor completed tasks.</p>
-</div>
-
-<div class="nav">
-<button onclick="prevSlide()">Previous</button>
-<button onclick="nextSlide()">Next</button>
-<button onclick="exitTutorial()">Exit</button>
-</div>
 
 </div>
 
@@ -380,7 +258,6 @@ document.getElementById(page).classList.add("active")
 
 displayTasks()
 displayUpdate()
-showAddedTasks()
 
 }
 
@@ -389,7 +266,9 @@ showAddedTasks()
 let tasks = JSON.parse(localStorage.getItem("tasks")) || []
 
 function saveTasks(){
+
 localStorage.setItem("tasks",JSON.stringify(tasks))
+
 }
 
 /* ADD TASK */
@@ -397,57 +276,31 @@ localStorage.setItem("tasks",JSON.stringify(tasks))
 function addTask(){
 
 let text=document.getElementById("taskInput").value
-let due=document.getElementById("dueDate").value
+let deadline=document.getElementById("taskDeadline").value
 
-if(text===""){
-alert("Enter task")
-return
-}
+if(text==="") return
 
 tasks.push({
 text:text,
-due:due,
+deadline:deadline,
 done:false
 })
 
+document.getElementById("taskInput").value=""
+document.getElementById("taskDeadline").value=""
+
 saveTasks()
 
-document.getElementById("taskInput").value=""
-document.getElementById("dueDate").value=""
-
-showAddedTasks()
-
-alert("Task successfully added!")
+alert("Task Added")
 
 }
 
-/* SHOW TASKS BELOW ADD FORM */
-
-function showAddedTasks(){
-
-let box=document.getElementById("addedTasks")
-if(!box) return
-
-box.innerHTML=""
-
-tasks.forEach(task=>{
-
-let div=document.createElement("div")
-div.className="task"
-
-div.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
-
-box.appendChild(div)
-
-})
-
-}
-
-/* DISPLAY TASKS */
+/* VIEW TASKS */
 
 function displayTasks(){
 
 let list=document.getElementById("taskList")
+
 if(!list) return
 
 list.innerHTML=""
@@ -455,23 +308,23 @@ list.innerHTML=""
 tasks.forEach((task,i)=>{
 
 let div=document.createElement("div")
+
 div.className="task"
+
+let today=new Date().toISOString().split("T")[0]
+
+if(task.deadline && task.deadline < today && !task.done){
+div.classList.add("late")
+}
 
 let text=document.createElement("span")
 
-text.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
+text.innerHTML=task.text+"<br><small>Deadline: "+(task.deadline || "None")+"</small>"
 
 if(task.done) text.classList.add("completed")
 
-text.onclick=function(){
-
-tasks[i].done=!tasks[i].done
-saveTasks()
-displayTasks()
-
-}
-
 div.appendChild(text)
+
 list.appendChild(div)
 
 })
@@ -484,18 +337,21 @@ updateReport()
 
 function searchTasks(){
 
-let key=document.getElementById("searchTask").value.toLowerCase()
+let keyword=document.getElementById("searchTask").value.toLowerCase()
 
 let list=document.getElementById("taskList")
+
 list.innerHTML=""
 
-tasks.forEach(task=>{
+tasks.forEach((task,i)=>{
 
-if(task.text.toLowerCase().includes(key)){
+if(task.text.toLowerCase().includes(keyword)){
 
 let div=document.createElement("div")
+
 div.className="task"
-div.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
+
+div.innerText=task.text+" (Deadline: "+task.deadline+")"
 
 list.appendChild(div)
 
@@ -505,11 +361,12 @@ list.appendChild(div)
 
 }
 
-/* UPDATE */
+/* UPDATE TASK */
 
 function displayUpdate(){
 
 let list=document.getElementById("updateList")
+
 if(!list) return
 
 list.innerHTML=""
@@ -517,21 +374,70 @@ list.innerHTML=""
 tasks.forEach((task,i)=>{
 
 let div=document.createElement("div")
+
 div.className="task"
 
-div.innerHTML=task.text+" ("+task.due+")"
+let text=document.createElement("span")
 
-let del=document.createElement("button")
-del.innerText="Delete"
+text.innerText=task.text
 
-del.onclick=function(){
+let complete=document.createElement("button")
 
-tasks.splice(i,1)
+complete.innerText="Complete"
+
+complete.className="complete"
+
+complete.onclick=function(){
+
+tasks[i].done=true
+
 saveTasks()
+
 displayUpdate()
 
 }
 
+let edit=document.createElement("button")
+
+edit.innerText="Edit"
+
+edit.className="edit"
+
+edit.onclick=function(){
+
+let newTask=prompt("Edit Task",task.text)
+
+if(newTask){
+
+tasks[i].text=newTask
+
+saveTasks()
+
+displayUpdate()
+
+}
+
+}
+
+let del=document.createElement("button")
+
+del.innerText="Delete"
+
+del.className="delete"
+
+del.onclick=function(){
+
+tasks.splice(i,1)
+
+saveTasks()
+
+displayUpdate()
+
+}
+
+div.appendChild(text)
+div.appendChild(complete)
+div.appendChild(edit)
 div.appendChild(del)
 
 list.appendChild(div)
@@ -545,35 +451,48 @@ list.appendChild(div)
 function updateReport(){
 
 let total=tasks.length
+
 let completed=tasks.filter(t=>t.done).length
+
+let pending=total-completed
 
 document.getElementById("total").innerText=total
 document.getElementById("completed").innerText=completed
-document.getElementById("pending").innerText=total-completed
+document.getElementById("pending").innerText=pending
 
 }
 
-/* CALENDAR */
+/* REFRESH */
 
-function showCalendarTasks(){
+function refreshTasks(){
 
-let date=document.getElementById("calendarDate").value
-let box=document.getElementById("calendarTasks")
-
-box.innerHTML=""
-
-tasks.forEach(task=>{
-
-if(task.due===date){
-
-let p=document.createElement("p")
-p.innerText="• "+task.text
-
-box.appendChild(p)
+displayTasks()
 
 }
+
+/* EXPORT */
+
+function saveTasksToFile(){
+
+let content="TaskTrack Report\n\n"
+
+tasks.forEach((task,i)=>{
+
+let status=task.done?"Completed":"Pending"
+
+content+=(i+1)+". "+task.text+" - "+status+" Deadline:"+task.deadline+"\n"
 
 })
+
+let blob=new Blob([content])
+
+let link=document.createElement("a")
+
+link.href=URL.createObjectURL(blob)
+
+link.download="tasks.txt"
+
+link.click()
 
 }
 
@@ -593,48 +512,7 @@ icon.innerHTML="🌙"
 
 }
 
-/* TUTORIAL */
-
-let slides
-let progress
-let index=0
-
-function showTutorial(){
-
-showPage("tutorial")
-
-slides=document.querySelectorAll(".slide")
-progress=document.getElementById("progress")
-
-index=0
-showSlide()
-
-}
-
-function showSlide(){
-
-slides.forEach(s=>s.classList.remove("active"))
-slides[index].classList.add("active")
-
-let percent=(index/(slides.length-1))*100
-progress.style.width=percent+"%"
-
-}
-
-function nextSlide(){
-if(index<slides.length-1){index++;showSlide()}
-}
-
-function prevSlide(){
-if(index>0){index--;showSlide()}
-}
-
-function exitTutorial(){
-showPage("home")
-}
-
 </script>
 
 </body>
 </html>
-```
