@@ -1,37 +1,42 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <title>TaskTrack</title>
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 
-/* BODY */
-
 body{
 margin:0;
-font-family:Trebuchet MS, sans-serif;
+font-family:Trebuchet MS;
 color:white;
-background:linear-gradient(135deg,#0b0014,#2b0040);
 text-align:center;
-transition:0.4s;
+background:linear-gradient(135deg,#0f0c29,#302b63,#24243e);
+background-size:400% 400%;
+animation:bgMove 12s infinite alternate;
 }
 
-/* LIGHT MODE */
-
-body.light{
-background:#f0f3f8;
-color:black;
+@keyframes bgMove{
+0%{background-position:left;}
+100%{background-position:right;}
 }
 
-/* PAGE ANIMATION */
+.glass{
+background:rgba(255,255,255,0.1);
+backdrop-filter:blur(15px);
+border:1px solid rgba(255,255,255,0.2);
+border-radius:14px;
+box-shadow:0 8px 32px rgba(0,0,0,0.4);
+padding:20px;
+margin:20px auto;
+width:90%;
+max-width:420px;
+}
 
 .page{
 display:none;
 padding-top:60px;
-animation:fade .6s;
+animation:fade .5s;
 }
 
 .active{
@@ -39,100 +44,97 @@ display:block;
 }
 
 @keyframes fade{
-from{opacity:0; transform:translateY(20px);}
-to{opacity:1; transform:translateY(0);}
+from{opacity:0;transform:translateY(20px);}
+to{opacity:1;transform:translateY(0);}
 }
-
-/* BUTTON */
 
 button{
 padding:10px 20px;
 border:none;
-border-radius:6px;
-background:#a855ff;
-color:white;
+border-radius:8px;
 cursor:pointer;
 font-weight:bold;
-margin:5px;
-transition:0.3s;
+color:white;
+background:linear-gradient(135deg,#a855ff,#9333ea);
+margin:6px;
 }
 
 button:hover{
-background:#9333ea;
 transform:scale(1.08);
 }
 
-/* INPUT */
-
 input{
 padding:10px;
-width:55%;
-border-radius:5px;
-border:none;
-margin:5px;
-}
-
-/* TASK AREA */
-
-.task-section{
 width:80%;
-margin:auto;
-margin-top:20px;
+border:none;
+border-radius:8px;
+margin:6px;
+background:rgba(255,255,255,0.15);
+color:white;
 }
-
-/* TASK CARD */
 
 .task{
 background:rgba(255,255,255,0.1);
 padding:12px;
 margin-top:10px;
+border-radius:10px;
 display:flex;
 justify-content:space-between;
 align-items:center;
-border-radius:6px;
-animation:taskPop .4s;
 }
-
-@keyframes taskPop{
-from{transform:scale(.8); opacity:0;}
-to{transform:scale(1); opacity:1;}
-}
-
-/* TASK STATUS */
 
 .completed{
 text-decoration:line-through;
 color:#7CFFB2;
 }
 
-.late{
-background:#7a0000;
+.countdown{
+font-size:12px;
+opacity:.8;
 }
 
-/* UPDATE BUTTONS */
-
-.edit{background:orange;}
-.delete{background:red;}
-.complete{background:green;}
-
-.report{
-background:rgba(255,255,255,0.1);
-padding:15px;
-margin-top:20px;
-border-radius:6px;
-}
-
-/* THEME BUTTON */
-
-.theme-toggle{
-position:fixed;
-top:15px;
-right:20px;
-font-size:22px;
+.notification{
+background:rgba(255,0,0,0.3);
+padding:10px;
+margin-top:10px;
+border-radius:8px;
 cursor:pointer;
-background:rgba(255,255,255,0.2);
-padding:8px 12px;
-border-radius:50px;
+}
+
+.slide{
+width:100vw;
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+position:absolute;
+opacity:0;
+transform:scale(.9);
+transition:.5s;
+}
+
+.slide.active{
+opacity:1;
+transform:scale(1);
+}
+
+.progress{
+position:fixed;
+top:0;
+left:0;
+height:5px;
+background:#a855ff;
+width:0%;
+}
+
+.nav{
+position:fixed;
+bottom:20px;
+width:100%;
+display:flex;
+justify-content:center;
+gap:20px;
 }
 
 </style>
@@ -140,15 +142,21 @@ border-radius:50px;
 
 <body>
 
-<div class="theme-toggle" onclick="toggleTheme()" id="themeIcon">🌙</div>
-
 <!-- HOME -->
 
 <div id="home" class="page active">
 
+<div class="glass">
+
 <h1>TaskTrack</h1>
 
-<button onclick="showPage('menu')">Open</button>
+<button onclick="openApp()">Open</button>
+
+<button onclick="showTutorial()">Tutorial</button>
+
+<div id="notificationPanel"></div>
+
+</div>
 
 </div>
 
@@ -156,15 +164,19 @@ border-radius:50px;
 
 <div id="menu" class="page">
 
-<h2>Task Menu</h2>
+<div class="glass">
+
+<h2>Menu</h2>
 
 <button onclick="showPage('addPage')">Add Task</button>
 
 <button onclick="showPage('updatePage')">Update Task</button>
 
-<button onclick="showPage('viewPage')">View Task</button>
+<button onclick="showPage('viewPage')">View Tasks</button>
 
 <button onclick="showPage('home')">Back</button>
+
+</div>
 
 </div>
 
@@ -172,25 +184,25 @@ border-radius:50px;
 
 <div id="addPage" class="page">
 
+<div class="glass">
+
 <h2>Add Task</h2>
 
 <input id="taskInput" placeholder="Enter task">
 
 <br>
 
-<label>Deadline:</label>
-
 <input type="date" id="taskDeadline">
 
 <br>
 
-<button onclick="addTask()">Add Task</button>
+<input type="time" id="taskTime">
 
 <br><br>
 
-<button onclick="showPage('viewPage')">View Tasks</button>
+<button onclick="addTask()">Add Task</button>
 
-<button onclick="showPage('updatePage')">Update Tasks</button>
+<button onclick="showPage('viewPage')">View Tasks</button>
 
 <br><br>
 
@@ -198,128 +210,205 @@ border-radius:50px;
 
 </div>
 
-<!-- UPDATE TASK -->
+</div>
+
+<!-- UPDATE -->
 
 <div id="updatePage" class="page">
 
+<div class="glass">
+
 <h2>Update Tasks</h2>
 
-<div id="updateList" class="task-section"></div>
-
-<br>
-
-<button onclick="showPage('viewPage')">View Tasks</button>
+<div id="updateList"></div>
 
 <button onclick="showPage('menu')">Back</button>
 
 </div>
 
-<!-- VIEW TASK -->
+</div>
+
+<!-- VIEW -->
 
 <div id="viewPage" class="page">
 
-<h2>View Tasks</h2>
+<div class="glass">
 
-<input id="searchTask" placeholder="Search..." onkeyup="searchTasks()">
+<h2>Tasks</h2>
 
-<div id="taskList" class="task-section"></div>
-
-<div class="report">
-
-<p>Total: <span id="total">0</span></p>
-
-<p>Completed: <span id="completed">0</span></p>
-
-<p>Pending: <span id="pending">0</span></p>
-
-</div>
+<div id="taskList"></div>
 
 <button onclick="refreshTasks()">Refresh</button>
 
-<button onclick="saveTasksToFile()">Save Tasks</button>
-
-<br><br>
-
 <button onclick="showPage('menu')">Back</button>
+
+</div>
+
+</div>
+
+<!-- TUTORIAL -->
+
+<div id="tutorial" class="page">
+
+<div class="progress" id="progress"></div>
+
+<div class="slide active">
+<h1>Welcome</h1>
+<p>This tutorial will guide you.</p>
+</div>
+
+<div class="slide">
+<h1>Step 1</h1>
+<p>Press Open to start the app.</p>
+</div>
+
+<div class="slide">
+<h1>Step 2</h1>
+<p>Add tasks with deadlines.</p>
+</div>
+
+<div class="slide">
+<h1>Step 3</h1>
+<p>Update tasks to publish them.</p>
+</div>
+
+<div class="slide">
+<h1>Step 4</h1>
+<p>View and monitor your tasks.</p>
+</div>
+
+<div class="nav">
+<button onclick="prevSlide()">Prev</button>
+<button onclick="nextSlide()">Next</button>
+<button onclick="exitTutorial()">Exit</button>
+</div>
 
 </div>
 
 <script>
 
-/* PAGE NAVIGATION */
-
-function showPage(page){
-
-document.querySelectorAll(".page").forEach(p=>{
-p.classList.remove("active")
-})
-
-document.getElementById(page).classList.add("active")
-
-displayTasks()
-displayUpdate()
-
-}
-
-/* STORAGE */
-
 let tasks = JSON.parse(localStorage.getItem("tasks")) || []
+let notifications=[]
 
 function saveTasks(){
-
 localStorage.setItem("tasks",JSON.stringify(tasks))
-
 }
 
-/* ADD TASK */
+function showPage(page){
+document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"))
+document.getElementById(page).classList.add("active")
+displayTasks()
+displayUpdate()
+}
 
 function addTask(){
 
 let text=document.getElementById("taskInput").value
 let deadline=document.getElementById("taskDeadline").value
+let time=document.getElementById("taskTime").value
 
 if(text==="") return
 
 tasks.push({
 text:text,
 deadline:deadline,
-done:false
+time:time,
+done:false,
+published:false
 })
-
-document.getElementById("taskInput").value=""
-document.getElementById("taskDeadline").value=""
 
 saveTasks()
 
-alert("Task Added")
+alert("Task added")
 
+document.getElementById("taskInput").value=""
+document.getElementById("taskDeadline").value=""
+document.getElementById("taskTime").value=""
 }
 
-/* VIEW TASKS */
+function displayUpdate(){
 
-function displayTasks(){
-
-let list=document.getElementById("taskList")
-
+let list=document.getElementById("updateList")
 if(!list) return
 
 list.innerHTML=""
 
 tasks.forEach((task,i)=>{
 
-let div=document.createElement("div")
+if(task.done) return
 
+let div=document.createElement("div")
 div.className="task"
 
-let today=new Date().toISOString().split("T")[0]
+let text=document.createElement("span")
+text.innerText=task.text
 
-if(task.deadline && task.deadline < today && !task.done){
-div.classList.add("late")
+let complete=document.createElement("button")
+complete.innerText="Complete"
+
+complete.onclick=function(){
+
+tasks[i].done=true
+tasks[i].published=true
+
+saveTasks()
+
+displayUpdate()
+
 }
 
-let text=document.createElement("span")
+let edit=document.createElement("button")
+edit.innerText="Edit"
 
-text.innerHTML=task.text+"<br><small>Deadline: "+(task.deadline || "None")+"</small>"
+edit.onclick=function(){
+
+let newTask=prompt("Edit",task.text)
+
+if(newTask){
+
+tasks[i].text=newTask
+tasks[i].published=true
+
+saveTasks()
+
+displayUpdate()
+
+}
+
+}
+
+div.appendChild(text)
+div.appendChild(complete)
+div.appendChild(edit)
+
+list.appendChild(div)
+
+})
+
+}
+
+function displayTasks(){
+
+let list=document.getElementById("taskList")
+if(!list) return
+
+list.innerHTML=""
+
+tasks.forEach(task=>{
+
+if(!task.published) return
+
+let div=document.createElement("div")
+div.className="task"
+
+let text=document.createElement("div")
+
+let due=new Date(task.deadline+"T"+task.time)
+
+text.innerHTML=
+task.text+
+"<br><small>"+task.deadline+" "+task.time+"</small>"+
+"<div class='countdown' data-due='"+due.toISOString()+"'></div>"
 
 if(task.done) text.classList.add("completed")
 
@@ -329,190 +418,146 @@ list.appendChild(div)
 
 })
 
-updateReport()
-
 }
-
-/* SEARCH */
-
-function searchTasks(){
-
-let keyword=document.getElementById("searchTask").value.toLowerCase()
-
-let list=document.getElementById("taskList")
-
-list.innerHTML=""
-
-tasks.forEach((task,i)=>{
-
-if(task.text.toLowerCase().includes(keyword)){
-
-let div=document.createElement("div")
-
-div.className="task"
-
-div.innerText=task.text+" (Deadline: "+task.deadline+")"
-
-list.appendChild(div)
-
-}
-
-})
-
-}
-
-/* UPDATE TASK */
-
-function displayUpdate(){
-
-let list=document.getElementById("updateList")
-
-if(!list) return
-
-list.innerHTML=""
-
-tasks.forEach((task,i)=>{
-
-let div=document.createElement("div")
-
-div.className="task"
-
-let text=document.createElement("span")
-
-text.innerText=task.text
-
-let complete=document.createElement("button")
-
-complete.innerText="Complete"
-
-complete.className="complete"
-
-complete.onclick=function(){
-
-tasks[i].done=true
-
-saveTasks()
-
-displayUpdate()
-
-}
-
-let edit=document.createElement("button")
-
-edit.innerText="Edit"
-
-edit.className="edit"
-
-edit.onclick=function(){
-
-let newTask=prompt("Edit Task",task.text)
-
-if(newTask){
-
-tasks[i].text=newTask
-
-saveTasks()
-
-displayUpdate()
-
-}
-
-}
-
-let del=document.createElement("button")
-
-del.innerText="Delete"
-
-del.className="delete"
-
-del.onclick=function(){
-
-tasks.splice(i,1)
-
-saveTasks()
-
-displayUpdate()
-
-}
-
-div.appendChild(text)
-div.appendChild(complete)
-div.appendChild(edit)
-div.appendChild(del)
-
-list.appendChild(div)
-
-})
-
-}
-
-/* REPORT */
-
-function updateReport(){
-
-let total=tasks.length
-
-let completed=tasks.filter(t=>t.done).length
-
-let pending=total-completed
-
-document.getElementById("total").innerText=total
-document.getElementById("completed").innerText=completed
-document.getElementById("pending").innerText=pending
-
-}
-
-/* REFRESH */
 
 function refreshTasks(){
-
 displayTasks()
-
 }
 
-/* EXPORT */
+function updateCountdowns(){
 
-function saveTasksToFile(){
+document.querySelectorAll(".countdown").forEach(c=>{
 
-let content="TaskTrack Report\n\n"
+let due=new Date(c.dataset.due)
+let now=new Date()
 
-tasks.forEach((task,i)=>{
+let diff=due-now
 
-let status=task.done?"Completed":"Pending"
+if(diff<=0){
+c.innerText="Expired"
+return
+}
 
-content+=(i+1)+". "+task.text+" - "+status+" Deadline:"+task.deadline+"\n"
+let h=Math.floor(diff/3600000)
+let m=Math.floor((diff%3600000)/60000)
+
+c.innerText="Time left: "+h+"h "+m+"m"
 
 })
 
-let blob=new Blob([content])
+}
 
-let link=document.createElement("a")
+setInterval(updateCountdowns,60000)
 
-link.href=URL.createObjectURL(blob)
+function checkReminders(){
 
-link.download="tasks.txt"
+notifications=[]
 
-link.click()
+let now=new Date()
+
+tasks.forEach(task=>{
+
+if(task.done) return
+
+if(!task.deadline||!task.time) return
+
+let due=new Date(task.deadline+"T"+task.time)
+
+let diff=(due-now)/3600000
+
+if(diff<=12 && diff>6) notifications.push({task:task,msg:"12 hours remaining"})
+if(diff<=6 && diff>3) notifications.push({task:task,msg:"6 hours remaining"})
+if(diff<=3 && diff>0) notifications.push({task:task,msg:"3 hours remaining"})
+if(diff<=0) notifications.push({task:task,msg:"Missed deadline"})
+
+})
 
 }
 
-/* THEME */
+function showNotifications(){
 
-function toggleTheme(){
+let panel=document.getElementById("notificationPanel")
 
-document.body.classList.toggle("light")
+panel.innerHTML=""
 
-let icon=document.getElementById("themeIcon")
+notifications.forEach(n=>{
 
-if(document.body.classList.contains("light")){
-icon.innerHTML="☀️"
-}else{
-icon.innerHTML="🌙"
+let div=document.createElement("div")
+div.className="notification"
+
+div.innerHTML="<b>"+n.msg+"</b><br>"+n.task.text
+
+div.onclick=function(){
+showPage("updatePage")
 }
 
+panel.appendChild(div)
+
+})
+
+}
+
+function openApp(){
+
+checkReminders()
+
+showNotifications()
+
+showPage("menu")
+
+}
+
+/* tutorial */
+
+let slides
+let progress
+let index=0
+
+function showTutorial(){
+
+showPage("tutorial")
+
+slides=document.querySelectorAll(".slide")
+progress=document.getElementById("progress")
+
+index=0
+
+showSlide()
+
+}
+
+function showSlide(){
+
+slides.forEach(s=>s.classList.remove("active"))
+
+slides[index].classList.add("active")
+
+let percent=(index/(slides.length-1))*100
+
+progress.style.width=percent+"%"
+
+}
+
+function nextSlide(){
+if(index<slides.length-1){
+index++
+showSlide()
+}
+}
+
+function prevSlide(){
+if(index>0){
+index--
+showSlide()
+}
+}
+
+function exitTutorial(){
+showPage("home")
 }
 
 </script>
 
 </body>
 </html>
+
