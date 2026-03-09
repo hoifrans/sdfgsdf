@@ -1,0 +1,640 @@
+```html
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>TaskTrack</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+/* MAIN THEME */
+
+body{
+margin:0;
+font-family:Trebuchet MS, sans-serif;
+color:white;
+background:linear-gradient(135deg,#0b0014,#2b0040);
+text-align:center;
+transition:.4s;
+}
+
+body.light{
+background:#f0f3f8;
+color:black;
+}
+
+/* THEME TOGGLE */
+
+.theme-toggle{
+position:fixed;
+top:15px;
+right:20px;
+font-size:26px;
+cursor:pointer;
+z-index:1000;
+}
+
+/* PAGE SYSTEM */
+
+.page{
+display:none;
+padding-top:60px;
+animation:fade .4s ease;
+}
+
+.active{
+display:block;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(10px)}
+to{opacity:1;transform:translateY(0)}
+}
+
+/* BOX */
+
+.box{
+background:rgba(255,255,255,0.1);
+width:240px;
+margin:15px auto;
+padding:20px;
+border-radius:12px;
+backdrop-filter:blur(10px);
+transition:.3s;
+}
+
+.box:hover{
+transform:scale(1.05);
+}
+
+/* BUTTON */
+
+button{
+padding:10px 20px;
+border:none;
+border-radius:6px;
+background:#a855ff;
+color:white;
+cursor:pointer;
+font-weight:bold;
+transition:.2s;
+}
+
+button:hover{
+background:#9333ea;
+transform:scale(1.05);
+}
+
+/* TASK AREA */
+
+.task-section{
+width:70%;
+margin:auto;
+margin-top:20px;
+}
+
+input{
+padding:10px;
+border-radius:6px;
+border:none;
+margin:5px;
+}
+
+.task{
+background:rgba(255,255,255,0.1);
+padding:10px;
+margin-top:10px;
+border-radius:8px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+transition:.3s;
+}
+
+.task:hover{
+transform:translateY(-3px);
+}
+
+.completed{
+text-decoration:line-through;
+opacity:.6;
+}
+
+/* REPORT */
+
+.report{
+background:rgba(255,255,255,0.1);
+padding:15px;
+margin-top:20px;
+border-radius:8px;
+}
+
+/* CALENDAR */
+
+.calendar-box{
+background:rgba(255,255,255,0.1);
+padding:20px;
+width:300px;
+margin:auto;
+border-radius:10px;
+}
+
+/* TUTORIAL */
+
+.slide{
+width:100vw;
+height:100vh;
+display:flex;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+position:absolute;
+opacity:0;
+transform:scale(.9);
+transition:.5s;
+}
+
+.slide.active{
+opacity:1;
+transform:scale(1);
+}
+
+.slide img{
+width:220px;
+margin-bottom:20px;
+border-radius:10px;
+}
+
+.progress{
+position:fixed;
+top:0;
+left:0;
+height:5px;
+background:#a855ff;
+width:0%;
+}
+
+.nav{
+position:fixed;
+bottom:20px;
+width:100%;
+display:flex;
+justify-content:center;
+gap:20px;
+}
+
+/* MOBILE */
+
+@media(max-width:768px){
+
+.task-section{
+width:90%;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="theme-toggle" onclick="toggleTheme()" id="themeIcon">🌙</div>
+
+<!-- HOME -->
+
+<div id="home" class="page active">
+
+<h1>TaskTrack</h1>
+
+<div class="box">
+<button onclick="showPage('menu')">Open</button>
+</div>
+
+<div class="box">
+<button onclick="showTutorial()">Tutorial</button>
+</div>
+
+</div>
+
+<!-- MENU -->
+
+<div id="menu" class="page">
+
+<h2>Task Menu</h2>
+
+<div class="box">
+<button onclick="showPage('addPage')">Add Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('updatePage')">Update Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('viewPage')">View Task</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('calendarPage')">Calendar</button>
+</div>
+
+<div class="box">
+<button onclick="showPage('home')">Back</button>
+</div>
+
+</div>
+
+<!-- ADD TASK -->
+
+<div id="addPage" class="page">
+
+<h2>Add Task</h2>
+
+<div class="task-section">
+
+<input id="taskInput" placeholder="Task name">
+
+<input type="date" id="dueDate">
+
+<br><br>
+
+<button onclick="addTask()">Add Task</button>
+
+</div>
+
+<h3>Added Tasks</h3>
+
+<div id="addedTasks" class="task-section"></div>
+
+<br>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+<!-- UPDATE -->
+
+<div id="updatePage" class="page">
+
+<h2>Update Tasks</h2>
+
+<div id="updateList" class="task-section"></div>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+<!-- VIEW -->
+
+<div id="viewPage" class="page">
+
+<h2>View Tasks</h2>
+
+<input id="searchTask" placeholder="Search task..." onkeyup="searchTasks()">
+
+<div id="taskList" class="task-section"></div>
+
+<div class="report">
+
+<p>Total Tasks: <span id="total">0</span></p>
+<p>Completed: <span id="completed">0</span></p>
+<p>Pending: <span id="pending">0</span></p>
+
+</div>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+<!-- CALENDAR -->
+
+<div id="calendarPage" class="page">
+
+<h2>Calendar Tasks</h2>
+
+<div class="calendar-box">
+
+<input type="date" id="calendarDate" onchange="showCalendarTasks()">
+
+<div id="calendarTasks"></div>
+
+</div>
+
+<br>
+
+<button onclick="showPage('menu')">Back</button>
+
+</div>
+
+<!-- TUTORIAL -->
+
+<div id="tutorial" class="page">
+
+<div class="progress" id="progress"></div>
+
+<div class="slide active">
+<img src="https://picsum.photos/200">
+<h1>Welcome</h1>
+<p>This tutorial explains the system.</p>
+</div>
+
+<div class="slide">
+<img src="https://picsum.photos/201">
+<h1>Add Tasks</h1>
+<p>Create tasks with deadlines.</p>
+</div>
+
+<div class="slide">
+<img src="https://picsum.photos/202">
+<h1>Calendar</h1>
+<p>View tasks by due date.</p>
+</div>
+
+<div class="slide">
+<img src="https://picsum.photos/203">
+<h1>Track Progress</h1>
+<p>Monitor completed tasks.</p>
+</div>
+
+<div class="nav">
+<button onclick="prevSlide()">Previous</button>
+<button onclick="nextSlide()">Next</button>
+<button onclick="exitTutorial()">Exit</button>
+</div>
+
+</div>
+
+<script>
+
+/* PAGE NAVIGATION */
+
+function showPage(page){
+
+document.querySelectorAll(".page").forEach(p=>{
+p.classList.remove("active")
+})
+
+document.getElementById(page).classList.add("active")
+
+displayTasks()
+displayUpdate()
+showAddedTasks()
+
+}
+
+/* STORAGE */
+
+let tasks = JSON.parse(localStorage.getItem("tasks")) || []
+
+function saveTasks(){
+localStorage.setItem("tasks",JSON.stringify(tasks))
+}
+
+/* ADD TASK */
+
+function addTask(){
+
+let text=document.getElementById("taskInput").value
+let due=document.getElementById("dueDate").value
+
+if(text===""){
+alert("Enter task")
+return
+}
+
+tasks.push({
+text:text,
+due:due,
+done:false
+})
+
+saveTasks()
+
+document.getElementById("taskInput").value=""
+document.getElementById("dueDate").value=""
+
+showAddedTasks()
+
+alert("Task successfully added!")
+
+}
+
+/* SHOW TASKS BELOW ADD FORM */
+
+function showAddedTasks(){
+
+let box=document.getElementById("addedTasks")
+if(!box) return
+
+box.innerHTML=""
+
+tasks.forEach(task=>{
+
+let div=document.createElement("div")
+div.className="task"
+
+div.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
+
+box.appendChild(div)
+
+})
+
+}
+
+/* DISPLAY TASKS */
+
+function displayTasks(){
+
+let list=document.getElementById("taskList")
+if(!list) return
+
+list.innerHTML=""
+
+tasks.forEach((task,i)=>{
+
+let div=document.createElement("div")
+div.className="task"
+
+let text=document.createElement("span")
+
+text.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
+
+if(task.done) text.classList.add("completed")
+
+text.onclick=function(){
+
+tasks[i].done=!tasks[i].done
+saveTasks()
+displayTasks()
+
+}
+
+div.appendChild(text)
+list.appendChild(div)
+
+})
+
+updateReport()
+
+}
+
+/* SEARCH */
+
+function searchTasks(){
+
+let key=document.getElementById("searchTask").value.toLowerCase()
+
+let list=document.getElementById("taskList")
+list.innerHTML=""
+
+tasks.forEach(task=>{
+
+if(task.text.toLowerCase().includes(key)){
+
+let div=document.createElement("div")
+div.className="task"
+div.innerHTML=task.text+"<br><small>Due: "+task.due+"</small>"
+
+list.appendChild(div)
+
+}
+
+})
+
+}
+
+/* UPDATE */
+
+function displayUpdate(){
+
+let list=document.getElementById("updateList")
+if(!list) return
+
+list.innerHTML=""
+
+tasks.forEach((task,i)=>{
+
+let div=document.createElement("div")
+div.className="task"
+
+div.innerHTML=task.text+" ("+task.due+")"
+
+let del=document.createElement("button")
+del.innerText="Delete"
+
+del.onclick=function(){
+
+tasks.splice(i,1)
+saveTasks()
+displayUpdate()
+
+}
+
+div.appendChild(del)
+
+list.appendChild(div)
+
+})
+
+}
+
+/* REPORT */
+
+function updateReport(){
+
+let total=tasks.length
+let completed=tasks.filter(t=>t.done).length
+
+document.getElementById("total").innerText=total
+document.getElementById("completed").innerText=completed
+document.getElementById("pending").innerText=total-completed
+
+}
+
+/* CALENDAR */
+
+function showCalendarTasks(){
+
+let date=document.getElementById("calendarDate").value
+let box=document.getElementById("calendarTasks")
+
+box.innerHTML=""
+
+tasks.forEach(task=>{
+
+if(task.due===date){
+
+let p=document.createElement("p")
+p.innerText="• "+task.text
+
+box.appendChild(p)
+
+}
+
+})
+
+}
+
+/* THEME */
+
+function toggleTheme(){
+
+document.body.classList.toggle("light")
+
+let icon=document.getElementById("themeIcon")
+
+if(document.body.classList.contains("light")){
+icon.innerHTML="☀️"
+}else{
+icon.innerHTML="🌙"
+}
+
+}
+
+/* TUTORIAL */
+
+let slides
+let progress
+let index=0
+
+function showTutorial(){
+
+showPage("tutorial")
+
+slides=document.querySelectorAll(".slide")
+progress=document.getElementById("progress")
+
+index=0
+showSlide()
+
+}
+
+function showSlide(){
+
+slides.forEach(s=>s.classList.remove("active"))
+slides[index].classList.add("active")
+
+let percent=(index/(slides.length-1))*100
+progress.style.width=percent+"%"
+
+}
+
+function nextSlide(){
+if(index<slides.length-1){index++;showSlide()}
+}
+
+function prevSlide(){
+if(index>0){index--;showSlide()}
+}
+
+function exitTutorial(){
+showPage("home")
+}
+
+</script>
+
+</body>
+</html>
+```
