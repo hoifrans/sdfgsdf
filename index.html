@@ -269,7 +269,7 @@ gap:20px;
 
 <div class="slide">
 <h1>Step 3</h1>
-<p>Update tasks to publish them.</p>
+<p>Update tasks to complete them.</p>
 </div>
 
 <div class="slide">
@@ -313,8 +313,7 @@ tasks.push({
 text:text,
 deadline:deadline,
 time:time,
-done:false,
-published:false
+done:false
 })
 
 saveTasks()
@@ -324,6 +323,9 @@ alert("Task added")
 document.getElementById("taskInput").value=""
 document.getElementById("taskDeadline").value=""
 document.getElementById("taskTime").value=""
+
+showPage("viewPage")
+
 }
 
 function displayUpdate(){
@@ -349,11 +351,9 @@ complete.innerText="Complete"
 complete.onclick=function(){
 
 tasks[i].done=true
-tasks[i].published=true
-
 saveTasks()
-
 displayUpdate()
+displayTasks()
 
 }
 
@@ -365,14 +365,10 @@ edit.onclick=function(){
 let newTask=prompt("Edit",task.text)
 
 if(newTask){
-
 tasks[i].text=newTask
-tasks[i].published=true
-
 saveTasks()
-
 displayUpdate()
-
+displayTasks()
 }
 
 }
@@ -396,8 +392,6 @@ list.innerHTML=""
 
 tasks.forEach(task=>{
 
-if(!task.published) return
-
 let div=document.createElement("div")
 div.className="task"
 
@@ -417,6 +411,8 @@ div.appendChild(text)
 list.appendChild(div)
 
 })
+
+updateCountdowns()
 
 }
 
@@ -458,11 +454,9 @@ let now=new Date()
 tasks.forEach(task=>{
 
 if(task.done) return
-
 if(!task.deadline||!task.time) return
 
 let due=new Date(task.deadline+"T"+task.time)
-
 let diff=(due-now)/3600000
 
 if(diff<=12 && diff>6) notifications.push({task:task,msg:"12 hours remaining"})
@@ -477,7 +471,6 @@ if(diff<=0) notifications.push({task:task,msg:"Missed deadline"})
 function showNotifications(){
 
 let panel=document.getElementById("notificationPanel")
-
 panel.innerHTML=""
 
 notifications.forEach(n=>{
@@ -500,9 +493,7 @@ panel.appendChild(div)
 function openApp(){
 
 checkReminders()
-
 showNotifications()
-
 showPage("menu")
 
 }
@@ -533,7 +524,6 @@ slides.forEach(s=>s.classList.remove("active"))
 slides[index].classList.add("active")
 
 let percent=(index/(slides.length-1))*100
-
 progress.style.width=percent+"%"
 
 }
@@ -556,8 +546,10 @@ function exitTutorial(){
 showPage("home")
 }
 
+displayTasks()
+displayUpdate()
+
 </script>
 
 </body>
 </html>
-
